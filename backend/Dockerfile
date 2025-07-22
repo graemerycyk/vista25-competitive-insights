@@ -1,9 +1,12 @@
 FROM python:3.13-slim
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Copy the project into the image
-ADD . /app
-WORKDIR /app
+# Copy dependency files from root
+COPY pyproject.toml uv.lock ./
+
+# Copy the backend app code
+ADD backend /app/backend
+WORKDIR /app/backend
 
 # Install dependencies
 RUN uv sync --locked
