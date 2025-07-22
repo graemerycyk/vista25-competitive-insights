@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 import pytest
-from datetime import datetime
 
 from agents.signal_detector import SignalDetector
 from models.model import SignalType, ImpactLevel, Confidence
