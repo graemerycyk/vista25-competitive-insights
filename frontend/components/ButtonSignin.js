@@ -10,11 +10,12 @@ import config from "@/config";
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({ text = "Get started", extraStyle }) => {
-  const supabase = createClient();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const getUser = async () => {
+      // Create Supabase client inside useEffect to avoid build-time errors
+      const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -23,7 +24,7 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
     };
 
     getUser();
-  }, [supabase]);
+  }, []);
 
   if (user) {
     return (

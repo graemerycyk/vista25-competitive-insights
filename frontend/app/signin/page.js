@@ -9,7 +9,6 @@ import config from "@/config";
 // This a login/singup page for Supabase Auth.
 // Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
 export default function Login() {
-  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -18,6 +17,9 @@ export default function Login() {
     e?.preventDefault();
 
     setIsLoading(true);
+    
+    // Create Supabase client inside function to avoid build-time errors
+    const supabase = createClient();
 
     try {
       const { type, provider } = options;

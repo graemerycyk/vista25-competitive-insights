@@ -14,12 +14,13 @@ import config from "@/config";
 const CrispChat = () => {
   const pathname = usePathname();
 
-  const supabase = createClient();
   const [data, setData] = useState(null);
 
   // This is used to get the user data from Supabase Auth (if logged in) => user ID is used to identify users in Crisp
   useEffect(() => {
     const getUser = async () => {
+      // Create Supabase client inside useEffect to avoid build-time errors
+      const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();

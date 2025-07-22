@@ -10,16 +10,12 @@ import config from "@/config";
 
 const links = [
   {
-    href: "/#pricing",
-    label: "Pricing",
+    href: "/competitors",
+    label: "Intelligence Dashboard",
   },
   {
-    href: "/#testimonials",
-    label: "Reviews",
-  },
-  {
-    href: "/#faq",
-    label: "FAQ",
+    href: "/api/scrape",
+    label: "Run Scraper",
   },
 ];
 
