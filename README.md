@@ -1,39 +1,36 @@
-# ShipFast — Javascript
+# Vista 2025 Hackathon - Competitive Insights
 
-Hey maker 👋 it's Marc from [ShipFast](https://shipfa.st/docs). Let's get your startup off the ground, FAST ⚡️
+Company: Gainsight
 
-<sub>**Watch/Star the repo to be notified when updates are pushed**</sub>
+Team:
 
-## Get Started
+- @graemerycyk (lead)
+- @ferndot
+- @itaim
+- @Tianaye02
 
-1. Follow the [Get Started Tutorial](https://shipfa.st/docs) to clone the repo and run your local server 💻
+Problem statement:
 
-<sub>**Looking for the /pages router version?** Use this [documentation](https://shipfa.st/docs-old) instead</sub>
+> In highly competitive markets, detecting subtle “signals” in public communications; such as product-launch hints in press releases, executive interviews, or social-media chatter can yield critical strategic insight. We plan to build an AI agent that autonomously scours open-web sources via deep research to assemble concise, up-to-date profiles of key competitors (covering their products, roadmap clues, hiring trends, partnerships, and financial posture), and continuously monitors new public communications to flag deviations or emerging patterns that might indicate shifts in strategy, impending launches, or other actionable events. Solutions should emphasise automated discovery, real-time updates, and explainable alerts so that business analysts can quickly understand both what was spotted and why it matters.
 
-2. Follow the [Ship In 5 Minutes Tutorial](https://shipfa.st/docs/tutorials/ship-in-5-minutes) to learn the foundation and ship your app quickly ⚡️
+## Quick Start
 
-## Links
+**System Requirements:**
 
--   [📚 Documentation](https://shipfa.st/docs)
--   [📣 Updates](https://shipfast.beehiiv.com/)
--   [🧑‍💻 Discord](https://shipfa.st/dashboard)
--   [🥇 Leaderboard](https://shipfa.st/leaderboard)
+- Docker & Docker Compose
 
-## Support
+**Run the Project:**
 
-Reach out at hello@shipfa.st
+```bash
+docker-compose up
+```
 
-Let's ship it, FAST ⚡️
+**Links:**
 
-\_
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+- Docs: http://localhost:8000/docs
 
-**📈 Grow your startup with [DataFast](https://datafa.st?ref=shipfast_readme)**
+## Deployment
 
--   Analyze your traffic
--   Get insights on your customers
--   Make data-driven decisions
-
-ShipFast members get 30% OFF on all plans! 🎁
-
-![datafast](https://github.com/user-attachments/assets/a6e78034-701a-49f1-a297-d33590f963be)
-
+This project is configured for automatic deployment to Heroku (backend) and Vercel (frontend).
