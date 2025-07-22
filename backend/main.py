@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth
-from app.core.config import settings
+from api import auth
+from core.config import settings
 
 app = FastAPI(title="Competitive Insights API")
 

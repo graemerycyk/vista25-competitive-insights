@@ -1,8 +1,7 @@
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: Dockerfile.backend
     ports:
       - "8000:8000"
     volumes:
@@ -11,7 +10,7 @@ services:
       - ENVIRONMENT=development
       - ALLOWED_ORIGINS=["http://localhost:3000"]
     env_file: ".env"
-    command: uv run uvicorn app.main:app --host=0.0.0.0 --port=8000
+    command: uv run uvicorn main:app --host=0.0.0.0 --port=8000
 
   frontend:
     build:

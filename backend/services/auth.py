@@ -1,6 +1,6 @@
 from fastapi import HTTPException
-from app.core.supabase import supabase_client
-from app.models.auth import UserCreate, UserLogin, UserResponse, TokenResponse
+from core.supabase import supabase_client
+from models.auth import UserCreate, UserLogin, UserResponse, TokenResponse
 
 
 class AuthService:
