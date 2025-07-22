@@ -18,8 +18,12 @@ Problem statement:
 **System Requirements:**
 
 - Docker & Docker Compose
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 **Run the Project:**
+
+1. Create a new .env file following the structure of .env.example
+2. Run the local servers using docker compose
 
 ```bash
 docker-compose up
