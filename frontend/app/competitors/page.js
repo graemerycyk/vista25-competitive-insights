@@ -8,7 +8,9 @@ import ImportantToast from '@/components/ImportantToast';
 export default function CompetitorsPage() {
   const [competitors, setCompetitors] = useState([]);
   const [events, setEvents] = useState([]);
+  const [signals, setSignals] = useState([]);
   const [activeTab, setActiveTab] = useState('');
+  const [viewMode, setViewMode] = useState('events'); // 'events' or 'signals'
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
@@ -52,8 +54,28 @@ export default function CompetitorsPage() {
 
       console.log('Events fetched:', eventsData);
 
+      // Fetch all signals
+      console.log('Fetching signals...');
+      const { data: signalsData, error: signalsError } = await supabase
+        .from('signals')
+        .select('*')
+        .order('detected_at', { ascending: false });
+
+      if (signalsError) {
+        console.error('Error fetching signals:', signalsError);
+        // Don't fail if signals table doesn't exist yet
+        if (!signalsError.message.includes('does not exist')) {
+          setError('Failed to fetch signals: ' + signalsError.message);
+          setLoading(false);
+          return;
+        }
+      }
+
+      console.log('Signals fetched:', signalsData);
+
       setCompetitors(competitorsData || []);
       setEvents(eventsData || []);
+      setSignals(signalsData || []);
       
       // Set first competitor as active tab if none selected
       if (!activeTab && competitorsData && competitorsData.length > 0) {
@@ -119,6 +141,18 @@ export default function CompetitorsPage() {
     return events.filter(event => event.competitor_id === competitorId);
   };
 
+  const getSignalsForCompetitor = (competitorName) => {
+    return signals.filter(signal => 
+      signal.company_name.toLowerCase().includes(competitorName.toLowerCase()) ||
+      competitorName.toLowerCase().includes(signal.company_name.toLowerCase())
+    );
+  };
+
+  const getActiveCompetitorName = () => {
+    const competitor = competitors.find(c => c.id === activeTab);
+    return competitor ? competitor.name : '';
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -126,6 +160,24 @@ export default function CompetitorsPage() {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const getImpactColor = (impact) => {
+    switch(impact?.toLowerCase()) {
+      case 'high': return 'badge-error';
+      case 'medium': return 'badge-warning';
+      case 'low': return 'badge-success';
+      default: return 'badge-ghost';
+    }
+  };
+
+  const getConfidenceColor = (confidence) => {
+    switch(confidence?.toLowerCase()) {
+      case 'high': return 'badge-success';
+      case 'medium': return 'badge-warning';
+      case 'low': return 'badge-error';
+      default: return 'badge-ghost';
+    }
   };
 
   if (loading) {
@@ -168,13 +220,29 @@ export default function CompetitorsPage() {
             Competitor Intelligence
           </h1>
           <p className="text-base-content/70">
-            Monitor competitor activities and important events in real-time.
+            Monitor competitor activities, events, and signals in real-time.
           </p>
           {lastUpdated && (
             <p className="text-sm text-base-content/50 mt-2">
               Last updated: {lastUpdated.toLocaleTimeString()}
             </p>
           )}
+        </div>
+
+        {/* View Mode Toggle */}
+        <div className="flex gap-2 mb-6">
+          <button
+            className={`btn ${viewMode === 'events' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setViewMode('events')}
+          >
+            Events ({events.length})
+          </button>
+          <button
+            className={`btn ${viewMode === 'signals' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setViewMode('signals')}
+          >
+            Signals ({signals.length})
+          </button>
         </div>
 
         {competitors.length === 0 ? (
@@ -215,7 +283,10 @@ export default function CompetitorsPage() {
                   <span className="ml-2 opacity-60">({competitor.ticker})</span>
                 )}
                 <span className="badge badge-sm badge-neutral ml-2">
-                  {getEventsForCompetitor(competitor.id).length}
+                  {viewMode === 'events' 
+                    ? getEventsForCompetitor(competitor.id).length
+                    : getSignalsForCompetitor(competitor.name).length
+                  }
                 </span>
               </button>
             ))}
@@ -225,57 +296,133 @@ export default function CompetitorsPage() {
         {activeTab && (
           <div className="bg-base-200 rounded-lg p-6">
             <div className="overflow-x-auto">
-              <table className="table table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Headline</th>
-                    <th>Summary</th>
-                    <th>Importance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getEventsForCompetitor(activeTab).map((event) => (
-                    <tr key={event.id} className="hover">
-                      <td className="whitespace-nowrap text-sm">
-                        {formatDate(event.published_at)}
-                      </td>
-                      <td>
-                        <a
-                          href={event.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="link link-primary font-medium hover:link-accent"
-                        >
-                          {event.headline}
-                        </a>
-                      </td>
-                      <td className="max-w-md">
-                        <div className="line-clamp-2 text-sm text-base-content/80">
-                          {event.summary || 'No summary available'}
-                        </div>
-                      </td>
-                      <td>
-                        {event.is_important ? (
-                          <div className="badge badge-error text-white">
-                            Important
-                          </div>
-                        ) : (
-                          <div className="badge badge-ghost">Normal</div>
-                        )}
-                      </td>
+              {viewMode === 'events' ? (
+                // Events Table
+                <table className="table table-zebra w-full">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Headline</th>
+                      <th>Summary</th>
+                      <th>Importance</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {getEventsForCompetitor(activeTab).map((event) => (
+                      <tr key={event.id} className="hover">
+                        <td className="whitespace-nowrap text-sm">
+                          {formatDate(event.published_at)}
+                        </td>
+                        <td>
+                          <a
+                            href={event.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="link link-primary font-medium hover:link-accent"
+                          >
+                            {event.headline}
+                          </a>
+                        </td>
+                        <td className="max-w-md">
+                          <div className="line-clamp-2 text-sm text-base-content/80">
+                            {event.summary || 'No summary available'}
+                          </div>
+                        </td>
+                        <td>
+                          {event.is_important ? (
+                            <div className="badge badge-error text-white">
+                              Important
+                            </div>
+                          ) : (
+                            <div className="badge badge-ghost">Normal</div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                // Signals Table
+                <table className="table table-zebra w-full">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Signal Type</th>
+                      <th>Title</th>
+                      <th>Impact</th>
+                      <th>Action</th>
+                      <th>Confidence</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getSignalsForCompetitor(getActiveCompetitorName()).map((signal) => (
+                      <tr key={signal.id} className="hover">
+                        <td className="whitespace-nowrap text-sm">
+                          {formatDate(signal.detected_at)}
+                        </td>
+                        <td>
+                          <div className="badge badge-outline">
+                            {signal.signal_type}
+                          </div>
+                        </td>
+                        <td>
+                          {signal.source_url ? (
+                            <a
+                              href={signal.source_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="link link-primary font-medium hover:link-accent"
+                            >
+                              {signal.title}
+                            </a>
+                          ) : (
+                            <span className="font-medium">{signal.title}</span>
+                          )}
+                        </td>
+                        <td>
+                          <div className={`badge ${getImpactColor(signal.impact)}`}>
+                            {signal.impact}
+                          </div>
+                        </td>
+                        <td className="max-w-xs">
+                          <div className="line-clamp-2 text-sm">
+                            {signal.action}
+                          </div>
+                        </td>
+                        <td>
+                          {signal.confidence && (
+                            <div className={`badge badge-sm ${getConfidenceColor(signal.confidence)}`}>
+                              {signal.confidence}
+                            </div>
+                          )}
+                        </td>
+                        <td className="text-sm text-base-content/70">
+                          {signal.person && (
+                            <div>👤 {signal.person}</div>
+                          )}
+                          {signal.amount && (
+                            <div>💰 {signal.amount}</div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
               
-              {getEventsForCompetitor(activeTab).length === 0 && (
+              {/* Empty State */}
+              {((viewMode === 'events' && getEventsForCompetitor(activeTab).length === 0) ||
+                (viewMode === 'signals' && getSignalsForCompetitor(getActiveCompetitorName()).length === 0)) && (
                 <div className="text-center py-8">
                   <div className="text-base-content/50 mb-4">
-                    No events found for {competitors.find(c => c.id === activeTab)?.name}
+                    No {viewMode} found for {competitors.find(c => c.id === activeTab)?.name}
                   </div>
                   <div className="text-sm text-base-content/40 mb-4">
-                    Run the scraper to fetch news articles for this competitor.
+                    {viewMode === 'events' 
+                      ? 'Run the scraper to fetch news articles for this competitor.'
+                      : 'Run the signal detector to analyze competitor signals.'
+                    }
                   </div>
                   <a 
                     href="/api/scrape" 
