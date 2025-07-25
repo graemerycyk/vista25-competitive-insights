@@ -12,12 +12,12 @@ export default function Home() {
             <h1 className="font-extrabold text-4xl lg:text-6xl tracking-tight md:-mb-4">
               Monitor Your{" "}
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Competition
+                Customers
               </span>{" "}
               in Real-Time
             </h1>
             <p className="text-lg opacity-80 leading-relaxed max-w-md">
-              Get instant alerts on competitor activities including layoffs, acquisitions, funding rounds, and executive changes. Stay ahead with automated intelligence.
+              Get instant alerts on customer activities including layoffs, acquisitions, funding rounds, and executive changes. Stay ahead with automated customer intelligence.
             </p>
                         <Link 
               href="/competitors" 

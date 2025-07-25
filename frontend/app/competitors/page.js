@@ -142,10 +142,10 @@ export default function CompetitorsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-base-content mb-4">
-            Competitive Signals Dashboard
+            Customer Intelligence Dashboard
           </h1>
           <p className="text-base-content/70">
-            Real-time competitive intelligence and market signals.
+            Real-time customer intelligence and market signals. Data is collected from public sources, and analyzed by AI please verify the data before acting on it.
           </p>
           <div className="flex gap-4 items-center mt-4 flex-wrap">
             <div className="flex items-center gap-4">
